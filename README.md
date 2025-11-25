@@ -25,7 +25,7 @@
     <a href="https://openreview.net/profile?id=~Kai_Ma4"><strong>Kai Ma</strong></a>
     <br>
     <br>
-        <a href="https://arxiv.org/abs/TODO"><img src='https://img.shields.io/badge/arXiv-TODO-red' alt='Paper PDF'></a>
+        <a href="https://arxiv.org/abs/2511.19320"><img src='https://img.shields.io/badge/arXiv-2511.19320-red' alt='Paper PDF'></a>
         <a href='https://mcg-nju.github.io/steadydancer-web'><img src='https://img.shields.io/badge/Project-Page-blue' alt='Project Page'></a>
         <a href='https://huggingface.co/MCG-NJU/SteadyDancer-14B'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Model-yellow'></a>
         <a href='https://huggingface.co/datasets/MCG-NJU/X-Dance'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-X--Dance-green'></a>
@@ -43,7 +43,7 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 
 - **2025-11-24**: 🔥 Released the X-Dance Benchmark on [huggingface](https://huggingface.co/datasets/MCG-NJU/X-Dance).
 - **2025-11-24**: 🔥 Released the inference code and [weights](https://huggingface.co/MCG-NJU/SteadyDancer-14B) of SteadyDancer.
-- **2025-11-24**: 🔥 Our paper is in public on [arxiv](TODO).
+- **2025-11-24**: 🔥 Our paper is in public on [arxiv](https://arxiv.org/abs/2511.19320).
 
 ## 🎯 Motivation
 
@@ -153,7 +153,7 @@ huggingface-cli download jiamingZ/SteadyDancer-14B --local-dir ./SteadyDancer-14
 
 ## 🚀 Inference
 
-To generate dance video from a source image and a driving video (We have provided pose example in 'preprocess/output/' to try our model friendly):
+To generate dance video from a source image and a driving video (We have provided pose example in `preprocess/output/video00001_img00001/example` and `preprocess/output/video00002_img00002/example` to try our model quickly), please follow the steps below:
 - Pose extraction and alignment:
 ```
 ref_image_path="data/images/00001.png"
@@ -244,7 +244,15 @@ Our implementation is based on [Wan 2.1](https://github.com/Wan-Video/Wan2.1). W
 
 If you find our paper or this codebase useful for your research, please cite us.
 ```BibTeX
-TODO
+@misc{zhang2025steadydancer,
+      title={SteadyDancer: Harmonized and Coherent Human Image Animation with First-Frame Preservation}, 
+      author={Jiaming Zhang and Shengming Cao and Rui Li and Xiaotong Zhao and Yutao Cui and Xinglin Hou and Gangshan Wu and Haolan Chen and Yu Xu and Limin Wang and Kai Ma},
+      year={2025},
+      eprint={2511.19320},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2511.19320}, 
+}
 ```
 
 ## 📄 License
