@@ -210,13 +210,14 @@ image="$input_dir/ref_image.png"          # reference image path
 cond_pos_folder="$input_dir/positive/"    # positive condition pose folder
 cond_neg_folder="$input_dir/negative/"    # negative condition pose folder
 prompt=$(cat $input_dir/prompt.txt)       # read prompt from file
-save_file="$(basename "$(dirname "$input_dir")")---$(basename "$input_dir").mp4"  # save file name
+save_file="$(basename "$(dirname "$input_dir")")--Pair$(basename "$input_dir").mp4"  # save file name
 
 cfg_scale=5.0
 condition_guide_scale=1.0
 pro=0.4
 base_seed=106060
 
+# Single-GPU inference
 CUDA_VISIBLE_DEVICES=0 python generate_dancer.py \
     --task i2v-14B --size 1024*576 \
     --ckpt_dir $ckpt_dir \
@@ -228,8 +229,25 @@ CUDA_VISIBLE_DEVICES=0 python generate_dancer.py \
     --condition_guide_scale $condition_guide_scale \
     --end_cond_cfg $pro \
     --base_seed $base_seed \
-    --save_file "$save_file"
+    --save_file "${save_file}--$(date +"%Y%m%d%H%M%S")"
+
+# Multi-GPU inference using FSDP + xDiT USP
+GPUs=2
+torchrun --nproc_per_node=${GPUs} generate_dancer.py \
+    --dit_fsdp --t5_fsdp --ulysses_size ${GPUs} \
+    --task i2v-14B --size 1024*576 \
+    --ckpt_dir $ckpt_dir \
+    --prompt "$prompt" \
+    --image $image \
+    --cond_pos_folder $cond_pos_folder \
+    --cond_neg_folder $cond_neg_folder \
+    --sample_guide_scale $cfg_scale \
+    --condition_guide_scale $condition_guide_scale \
+    --end_cond_cfg $pro \
+    --base_seed $base_seed \
+    --save_file "${save_file}--$(date +"%Y%m%d%H%M%S")--xDiTUSP${GPUs}"
 ```
+NOTE: Multi-GPU inference may be faster and use less memory than Single-GPU inference, but [it may be different with Single-GPU results](https://github.com/Wan-Video/Wan2.1/issues/304) due to the non-deterministic nature of distributed computing, so we recommend using Single-GPU inference for better reproducibility.
 
 ## 🎥 X-Dance Benchmark
 To fill the void left by existing same-source benchmarks (such as TikTok), which fail to evaluate spatio-temporal misalignments, we propose **X-Dance**, a new benchmark that focuses on these challenges. The X-Dance benchmark is constructed from diverse image categories (male/female/cartoon, and upper-/full-body shots) and challenging driving videos (complex motions with blur and occlusion). Its curated set of pairings intentionally introduces spatial-structural inconsistencies and temporal start-gaps, allowing for a more robust evaluation of model generalization in the real world.

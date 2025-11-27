@@ -18,8 +18,11 @@ from .distributed.fsdp import shard_model
 from .modules.model import WanModel
 from .modules.t5 import T5EncoderModel
 from .modules.vae import WanVAE
-from .utils.fm_solvers import (FlowDPMSolverMultistepScheduler,
-                               get_sampling_sigmas, retrieve_timesteps)
+from .utils.fm_solvers import (
+    FlowDPMSolverMultistepScheduler,
+    get_sampling_sigmas,
+    retrieve_timesteps,
+)
 from .utils.fm_solvers_unipc import FlowUniPCMultistepScheduler
 
 
@@ -85,11 +88,12 @@ class WanT2V:
         self.model.eval().requires_grad_(False)
 
         if use_usp:
-            from xfuser.core.distributed import \
-                get_sequence_parallel_world_size
+            from xfuser.core.distributed import get_sequence_parallel_world_size
 
-            from .distributed.xdit_context_parallel import (usp_attn_forward,
-                                                            usp_dit_forward)
+            from .distributed.xdit_context_parallel import (
+                usp_attn_forward,
+                usp_dit_forward,
+            )
             for block in self.model.blocks:
                 block.self_attn.forward = types.MethodType(
                     usp_attn_forward, block.self_attn)

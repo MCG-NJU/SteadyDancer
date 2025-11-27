@@ -1,28 +1,33 @@
 # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
 import argparse
-from datetime import datetime
 import logging
 import os
 import sys
 import warnings
+from datetime import datetime
 
 warnings.filterwarnings('ignore')
 
-import torch, random
+import random
+
+import torch
 import torch.distributed as dist
 from PIL import Image
 
 import wan
-from wan.configs import WAN_CONFIGS, SIZE_CONFIGS, MAX_AREA_CONFIGS, SUPPORTED_SIZES
+from wan.configs import MAX_AREA_CONFIGS, SIZE_CONFIGS, SUPPORTED_SIZES, WAN_CONFIGS
 from wan.utils.prompt_extend import DashScopePromptExpander, QwenPromptExpander
-from wan.utils.utils import cache_video, cache_image, str2bool
+from wan.utils.utils import cache_image, cache_video, str2bool
+
 
 EXAMPLE_PROMPT = {
     "t2v-1.3B": {
-        "prompt": "Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.",
+        "prompt":
+            "Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.",
     },
     "t2v-14B": {
-        "prompt": "Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.",
+        "prompt":
+            "Two anthropomorphic cats in comfy boxing gear and bright gloves fight intensely on a spotlighted stage.",
     },
     "t2i-14B": {
         "prompt": "一个朴素端庄的美人",
@@ -44,7 +49,9 @@ def _validate_args(args):
 
     # The default sampling steps are 40 for image-to-video tasks and 50 for text-to-video tasks.
     if args.sample_steps is None:
-        args.sample_steps = 40 if "i2v" in args.task else 50
+        args.sample_steps = 50
+        if "i2v" in args.task:
+            args.sample_steps = 40
 
     if args.sample_shift is None:
         args.sample_shift = 5.0
@@ -155,8 +162,8 @@ def _parse_args():
     parser.add_argument(
         "--prompt_extend_target_lang",
         type=str,
-        default="ch",
-        choices=["ch", "en"],
+        default="zh",
+        choices=["zh", "en"],
         help="The target language of prompt extend.")
     parser.add_argument(
         "--base_seed",
@@ -167,7 +174,7 @@ def _parse_args():
         "--image",
         type=str,
         default=None,
-        help="The image to generate the video from.")
+        help="[image to video] The image to generate the video from.")
     parser.add_argument(
         "--sample_solver",
         type=str,
@@ -234,8 +241,10 @@ def generate(args):
 
     if args.ulysses_size > 1 or args.ring_size > 1:
         assert args.ulysses_size * args.ring_size == world_size, f"The number of ulysses_size and ring_size should be equal to the world size."
-        from xfuser.core.distributed import (initialize_model_parallel,
-                                             init_distributed_environment)
+        from xfuser.core.distributed import (
+            init_distributed_environment,
+            initialize_model_parallel,
+        )
         init_distributed_environment(
             rank=dist.get_rank(), world_size=dist.get_world_size())
 
@@ -260,7 +269,7 @@ def generate(args):
 
     cfg = WAN_CONFIGS[args.task]
     if args.ulysses_size > 1:
-        assert cfg.num_heads % args.ulysses_size == 0, f"`num_heads` must be divisible by `ulysses_size`."
+        assert cfg.num_heads % args.ulysses_size == 0, f"`{cfg.num_heads=}` cannot be divided evenly by `{args.ulysses_size=}`."
 
     logging.info(f"Generation job args: {args}")
     logging.info(f"Generation model config: {cfg}")
@@ -321,7 +330,7 @@ def generate(args):
             seed=args.base_seed,
             offload_model=args.offload_model)
 
-    else:
+    elif "i2v" in args.task:
         if args.prompt is None:
             args.prompt = EXAMPLE_PROMPT[args.task]["prompt"]
         if args.image is None:
@@ -377,6 +386,8 @@ def generate(args):
             guide_scale=args.sample_guide_scale,
             seed=args.base_seed,
             offload_model=args.offload_model)
+    else:
+        raise ValueError(f"Unkown task type: {args.task}")
 
     if rank == 0:
         if args.save_file is None:
@@ -384,7 +395,7 @@ def generate(args):
             formatted_prompt = args.prompt.replace(" ", "_").replace("/",
                                                                      "_")[:50]
             suffix = '.png' if "t2i" in args.task else '.mp4'
-            args.save_file = f"{args.task}_{args.size}_{args.ulysses_size}_{args.ring_size}_{formatted_prompt}_{formatted_time}" + suffix
+            args.save_file = f"{args.task}_{args.size.replace('*','x') if sys.platform=='win32' else args.size}_{args.ulysses_size}_{args.ring_size}_{formatted_prompt}_{formatted_time}" + suffix
 
         if "t2i" in args.task:
             logging.info(f"Saving generated image to {args.save_file}")

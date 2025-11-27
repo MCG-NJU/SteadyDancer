@@ -10,6 +10,7 @@ from diffusers.configuration_utils import ConfigMixin, register_to_config
 from diffusers.models.modeling_utils import ModelMixin
 
 from .attention import flash_attention
+
 from einops import rearrange
 from .small_archs import FactorConv3d, PoseRefNetNoBNV3
 from .mobilenetv2_dcd import DYModule

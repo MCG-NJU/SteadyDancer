@@ -1,6 +1,8 @@
 # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
 import torch
-import torch.cuda.amp as amp
+torch.backends.cudnn.deterministic = True
+# import torch.cuda.amp as amp
+import torch.amp as amp
 from xfuser.core.distributed import (
     get_sequence_parallel_rank,
     get_sequence_parallel_world_size,
@@ -8,7 +10,9 @@ from xfuser.core.distributed import (
 )
 from xfuser.core.long_ctx_attention import xFuserLongContextAttention
 
-from ..modules.model import sinusoidal_embedding_1d
+from ..modules.model_dancer import sinusoidal_embedding_1d
+
+from einops import rearrange
 
 
 def pad_freqs(original_tensor, target_len):
@@ -24,7 +28,8 @@ def pad_freqs(original_tensor, target_len):
     return padded_tensor
 
 
-@amp.autocast(enabled=False)
+# @amp.autocast(enabled=False)
+@amp.autocast(enabled=True, device_type="cuda", dtype=torch.bfloat16)
 def rope_apply(x, grid_sizes, freqs):
     """
     x:          [B, L, N, C].
@@ -62,7 +67,8 @@ def rope_apply(x, grid_sizes, freqs):
 
         # append to collection
         output.append(x_i)
-    return torch.stack(output).float()
+    # return torch.stack(output).float()
+    return torch.stack(output)
 
 
 def usp_dit_forward(
@@ -71,6 +77,11 @@ def usp_dit_forward(
     t,
     context,
     seq_len,
+    condition=None,
+    ref_x=None,
+    ref_c=None,
+    clip_fea_x=None,
+    clip_fea_c=None,
     clip_fea=None,
     y=None,
 ):
@@ -80,44 +91,81 @@ def usp_dit_forward(
     context:        A list of text embeddings each with shape [L, C].
     """
     if self.model_type == 'i2v':
-        assert clip_fea is not None and y is not None
+        assert clip_fea_x is not None and y is not None
     # params
     device = self.patch_embedding.weight.device
     if self.freqs.device != device:
         self.freqs = self.freqs.to(device)
 
+    x_noise_clone = torch.stack(x)
+
     if y is not None:
         x = [torch.cat([u, v], dim=0) for u, v in zip(x, y)]
 
-    # embeddings
-    x = [self.patch_embedding(u.unsqueeze(0)) for u in x]
+    # Temporal Motion Coherence Module.
+    condition_temporal = [self.condition_embedding_temporal(c.unsqueeze(0)) for c in [condition]]
+    
+    # Spatial Structure Adaptive Extractor.
+    with amp.autocast(dtype=torch.bfloat16, device_type="cuda"):
+        condition = condition[None]
+        bs, _, time_steps, _, _ = condition.shape
+        condition_reshape = rearrange(condition, 'b c t h w -> (b t) c h w')
+        condition_spatial = self.condition_embedding_spatial(condition_reshape)
+        condition_spatial = rearrange(condition_spatial, '(b t) c h w -> b c t h w', t=time_steps, b=bs)
+
+    # Hierarchical Aggregation (1): condition, temporal condition, spatial condition
+    condition_fused = condition + condition_temporal[0] + condition_spatial
+
+    # Frame-wise Attention Alignment Unit.
+    with amp.autocast(dtype=torch.bfloat16, device_type="cuda"):
+        condition_aligned = self.condition_embedding_align(condition_fused, x_noise_clone)
+
+    real_seq = x[0].shape[1]
+    
+    # Condition Fusion/Injection, Hierarchical Aggregation (2): x, fused condition, aligned condition
+    x = [self.patch_embedding_fuse(torch.cat([u[None], c[None], a[None]], 1)) for u, c, a in
+            zip(x, condition_fused, condition_aligned)]
+    
+    # Condition Augmentation: x_cond, ref_x, ref_c
+    ref_x = [ref_x]
+    ref_c = [ref_c]
+    ref_x = [self.patch_embedding(r.unsqueeze(0)) for r in ref_x]
+    ref_c = [self.patch_embedding_ref_c(r[:16].unsqueeze(0)) for r in ref_c]
+    x = [torch.cat([r, u, v], dim=2) for r, u, v in zip(x, ref_x, ref_c)]
+
     grid_sizes = torch.stack(
         [torch.tensor(u.shape[2:], dtype=torch.long) for u in x])
     x = [u.flatten(2).transpose(1, 2) for u in x]
     seq_lens = torch.tensor([u.size(1) for u in x], dtype=torch.long)
+    seq_len = seq_lens.max()
     assert seq_lens.max() <= seq_len
     x = torch.cat([
-        torch.cat([u, u.new_zeros(1, seq_len - u.size(1), u.size(2))], dim=1)
-        for u in x
+        torch.cat([u, u.new_zeros(1, seq_len - u.size(1), u.size(2))],
+                    dim=1) for u in x
     ])
 
     # time embeddings
-    with amp.autocast(dtype=torch.float32):
+    with amp.autocast(dtype=torch.bfloat16, device_type="cuda"):
         e = self.time_embedding(
-            sinusoidal_embedding_1d(self.freq_dim, t).float())
+            sinusoidal_embedding_1d(self.freq_dim, t).to(x.dtype))
         e0 = self.time_projection(e).unflatten(1, (6, self.dim))
-        assert e.dtype == torch.float32 and e0.dtype == torch.float32
+        # assert e.dtype == torch.float32 and e0.dtype == torch.float32
 
     # context
     context_lens = None
     context = self.text_embedding(
         torch.stack([
-            torch.cat([u, u.new_zeros(self.text_len - u.size(0), u.size(1))])
+            torch.cat(
+                [u, u.new_zeros(self.text_len - u.size(0), u.size(1))])
             for u in context
         ]))
 
-    if clip_fea is not None:
-        context_clip = self.img_emb(clip_fea)  # bs x 257 x dim
+    if clip_fea_x is not None:
+        context_clip_x = self.img_emb(clip_fea_x)  # bs x 257 x dim
+    if clip_fea_c is not None:
+        context_clip_c = self.img_emb(clip_fea_c)  # bs x 257 x dim
+    if clip_fea_x is not None:
+        context_clip = context_clip_x if context_clip_c is None else context_clip_x + context_clip_c    # Condition Augmentation
         context = torch.concat([context_clip, context], dim=1)
 
     # arguments
@@ -145,7 +193,8 @@ def usp_dit_forward(
 
     # unpatchify
     x = self.unpatchify(x, grid_sizes)
-    return [u.float() for u in x]
+    # return [u.float() for u in x]
+    return [u[:, :real_seq, ...] for u in x]
 
 
 def usp_attn_forward(self,
@@ -189,6 +238,7 @@ def usp_attn_forward(self,
     # x = torch.cat([x, x.new_zeros(b, s - x.size(1), n, d)], dim=1)
 
     # output
+    x = x.to(torch.bfloat16)
     x = x.flatten(2)
     x = self.o(x)
     return x
