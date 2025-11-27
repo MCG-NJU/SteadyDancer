@@ -41,6 +41,7 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 
 ## 📣 Updates
 
+- **2025-11-27**: 🔥 Supported Multi-GPU inference with FSDP + xDiT USP in the inference code.
 - **2025-11-24**: 🔥 Released the X-Dance Benchmark on [huggingface](https://huggingface.co/datasets/MCG-NJU/X-Dance).
 - **2025-11-24**: 🔥 Released the inference code and [weights](https://huggingface.co/MCG-NJU/SteadyDancer-14B) of SteadyDancer.
 - **2025-11-24**: 🔥 Our paper is in public on [arxiv](https://arxiv.org/abs/2511.19320).
@@ -247,7 +248,7 @@ torchrun --nproc_per_node=${GPUs} generate_dancer.py \
     --base_seed $base_seed \
     --save_file "${save_file}--$(date +"%Y%m%d%H%M%S")--xDiTUSP${GPUs}"
 ```
-NOTE: Multi-GPU inference may be faster and use less memory than Single-GPU inference, but [it may be different with Single-GPU results](https://github.com/Wan-Video/Wan2.1/issues/304) due to the non-deterministic nature of distributed computing, so we recommend using Single-GPU inference for better reproducibility.
+NOTE: Multi-GPU inference may be faster and use less memory than Single-GPU inference, but [it may be different with Single-GPU results](https://github.com/Wan-Video/Wan2.1/issues/304) due to the non-deterministic nature of distributed computing, **so we recommend using Single-GPU inference for better reproducibility**.
 
 ## 🎥 X-Dance Benchmark
 To fill the void left by existing same-source benchmarks (such as TikTok), which fail to evaluate spatio-temporal misalignments, we propose **X-Dance**, a new benchmark that focuses on these challenges. The X-Dance benchmark is constructed from diverse image categories (male/female/cartoon, and upper-/full-body shots) and challenging driving videos (complex motions with blur and occlusion). Its curated set of pairings intentionally introduces spatial-structural inconsistencies and temporal start-gaps, allowing for a more robust evaluation of model generalization in the real world.
