@@ -41,6 +41,7 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 
 ## 📣 Updates
 
+- **2025-11-30**: 🔥 SteadyDancer now supports ComfyUI in [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper). **Thanks to [kijai](https://github.com/kijai) for the tremendous contribution 🙏🙏 !!** Please note that our pose detector, alignment, and augmentor are still missing in the current version, which will impact performance, but you can already enjoy it with vitpose/dwpose and lightx2v. **Stay tuned for the full version later!!**
 - **2025-11-27**: 🔥 Supported Multi-GPU inference with FSDP + xDiT USP in the inference code.
 - **2025-11-24**: 🔥 Released the X-Dance Benchmark on [huggingface](https://huggingface.co/datasets/MCG-NJU/X-Dance).
 - **2025-11-24**: 🔥 Released the inference code and [weights](https://huggingface.co/MCG-NJU/SteadyDancer-14B) of SteadyDancer.
