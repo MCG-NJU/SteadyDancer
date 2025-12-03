@@ -41,11 +41,17 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 
 ## 📣 Updates
 
-- **2025-11-30**: 🔥 SteadyDancer now supports ComfyUI in [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper). **Thanks to [kijai](https://github.com/kijai) for the tremendous contribution 🙏🙏 !!** Please note that our pose detector, alignment, and augmentor are still missing in the current version, which will impact performance, but you can already enjoy it with vitpose/dwpose and lightx2v. **Stay tuned for the full version later!!**
 - **2025-11-27**: 🔥 Supported Multi-GPU inference with FSDP + xDiT USP in the inference code.
 - **2025-11-24**: 🔥 Released the X-Dance Benchmark on [huggingface](https://huggingface.co/datasets/MCG-NJU/X-Dance).
 - **2025-11-24**: 🔥 Released the inference code and [weights](https://huggingface.co/MCG-NJU/SteadyDancer-14B) of SteadyDancer.
 - **2025-11-24**: 🔥 Our paper is in public on [arxiv](https://arxiv.org/abs/2511.19320).
+
+## 🏘️ Community Works
+
+We warmly welcome community contributions to SteadyDancer! If your work has any relation or help to SteadyDancer and you would like more people to see it, please inform us.
+
+- **2025-12-03**: 🔥 SteadyDancer is now supported in [WanGP](https://github.com/deepbeepmeep/Wan2GP). [deepbeepmeep](https://github.com/deepbeepmeep) said WanGP supports full preprocessing pipeline with augmented poses, or use Loras accelerators for a quick generation. Thanks for their contributions!
+- **2025-11-30**: 🔥 SteadyDancer now supports ComfyUI in [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper). **Thanks to [kijai](https://github.com/kijai) for the tremendous contribution 🙏🙏 !!** Please note that our pose detector, alignment, and augmentor are still missing in the current version, which will impact performance, but you can already enjoy it with vitpose/dwpose and lightx2v. **Stay tuned for the full version later!!**
 
 ## 🎯 Motivation
 
@@ -150,7 +156,7 @@ huggingface-cli download yzd-v/DWPose --local-dir ./preprocess/pretrained_weight
 wget https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_l_8x8_300e_coco/yolox_l_8x8_300e_coco_20211126_140236-d3bd2b23.pth -O ./preprocess/pretrained_weights/dwpose/yolox_l_8x8_300e_coco.pth
 
 # Download SteadyDancer-14B model weights
-huggingface-cli download jiamingZ/SteadyDancer-14B --local-dir ./SteadyDancer-14B
+huggingface-cli download MCG-NJU/SteadyDancer-14B --local-dir ./SteadyDancer-14B
 ```
 
 ## 🚀 Inference
@@ -258,7 +264,7 @@ You can download the X-Dance benchmark from [huggingface](https://huggingface.co
 ![X-Dance](assets/X-Dance.png?raw=true)
 
 ## ❤️ Acknowledgements
-Our implementation is based on [Wan 2.1](https://github.com/Wan-Video/Wan2.1). We modify [MusePose](https://github.com/TMElyralab/MusePose/tree/main) to generate and align pose video. Thanks for their remarkable contribution and released code!
+Our implementation is based on [Wan 2.1](https://github.com/Wan-Video/Wan2.1). We modify [MusePose](https://github.com/TMElyralab/MusePose/tree/main) to generate and align pose video. Thanks for their remarkable contribution and released code! Thanks to everyone in the community who has contributed to SteadyDancer.
 
 ## 📚 Citation
 
