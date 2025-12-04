@@ -41,6 +41,7 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 
 ## 📣 Updates
 
+- **2025-12-04**: 🔥 Released our weight in [GGUF format](https://huggingface.co/MCG-NJU/SteadyDancer-GGUF), which coverted from [Kijai weight](https://huggingface.co/Kijai/WanVideo_comfy/tree/main/SteadyDancer) by [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF/tree/main/tools). It offers lower cost in [Kijai ComfyUI](https://github.com/kijai/ComfyUI-WanVideoWrapper).
 - **2025-11-27**: 🔥 Supported Multi-GPU inference with FSDP + xDiT USP in the inference code.
 - **2025-11-24**: 🔥 Released the X-Dance Benchmark on [huggingface](https://huggingface.co/datasets/MCG-NJU/X-Dance).
 - **2025-11-24**: 🔥 Released the inference code and [weights](https://huggingface.co/MCG-NJU/SteadyDancer-14B) of SteadyDancer.
