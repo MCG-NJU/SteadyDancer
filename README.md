@@ -148,6 +148,37 @@ pip install -e . -v                         # Install mmcv in editable mode
 python .dev_scripts/check_installation.py   # just verify the installation was successful by running this script, ignore the last verify script
 cd ../
 ```
+- **Torch 2.5.x + CUDA 12.1 users:** there is no prebuilt mmcv wheel for this combo. Build mmcv from source inside your `steadydancer` conda env so `mmcv._ext` is available:
+```
+conda activate steadydancer
+
+# Clean and prep
+pip uninstall -y mmcv mmcv-full mmcv-lite mmpose mmdet mmengine || true
+pip install --no-cache-dir -U pip setuptools wheel openmim
+mim install mmengine==0.10.7
+
+# Build mmcv with CUDA ops
+git clone https://github.com/open-mmlab/mmcv.git
+cd mmcv && git checkout v2.1.0
+pip install -r requirements/optional.txt
+MMCV_WITH_OPS=1 MAX_JOBS=$(nproc) python setup.py build_ext      # compile C++/CUDA ops
+MMCV_WITH_OPS=1 MAX_JOBS=$(nproc) python setup.py develop        # install in-place
+
+# Reinstall deps that rely on mmcv
+cd ..
+mim install "mmdet>=3.1.0"
+pip install mmpose==1.3.2
+
+# Quick smoke test
+python - <<'PY'
+import mmcv, mmpose
+from mmpose.apis import inference_topdown, init_model
+from mmpose.evaluation.functional import nms
+from mmpose.utils import adapt_mmdet_pipeline
+from mmpose.structures import merge_data_samples
+print("mmcv", mmcv.__version__, "mmpose", mmpose.__version__)
+PY
+```
 
 ## 📥 Download Checkpoints
 ```
