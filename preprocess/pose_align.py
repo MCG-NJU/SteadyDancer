@@ -1,25 +1,3 @@
-import os
-import sys
-
-this_dir = os.path.dirname(__file__)
-
-mmcv_pkg_root = os.path.join(os.path.dirname(this_dir), "mmcv")
-if os.path.exists(mmcv_pkg_root):
-    print(f"please make sure you have mmcv package successfully installed in local mmcv folder {mmcv_pkg_root}")
-    print(f">>> [check] sys.path before mmcv insert = {sys.path}")
-    print(f">>> [check] mmcv_pkg_root = {mmcv_pkg_root}")
-    if mmcv_pkg_root in sys.path:
-        sys.path.remove(mmcv_pkg_root)
-    sys.path.insert(0, mmcv_pkg_root)
-    print(f">>> [check] sys.path after mmcv insert = {sys.path}")
-else:
-    print(f">>> [check] mmcv_pkg_root not exists: {mmcv_pkg_root}")
-    print(f"please make sure you have mmcv package successfully installed by 'pip install mmcv' or 'mim install mmcv'")
-import mmcv
-print(">>> [check] mmcv __file__ =", getattr(mmcv, "__file__", None))
-print(">>> [check] mmcv __version__ =", getattr(mmcv, "__version__", None))
-assert mmcv.__version__ >= "2.0.0" and mmcv.__version__ < "2.2.0", "mmcv version must be >=2.0.0 and <2.2.0"
-
 import numpy as np
 import argparse
 import torch
@@ -615,10 +593,10 @@ def main():
     parser.add_argument('--detect_resolution', type=int, default=1024, help='detect_resolution')
     parser.add_argument('--image_resolution', type=int, default=720, help='image_resolution')
 
-    parser.add_argument("--yolox_config",  type=str, default=f"{this_dir}/pose/config/yolox_l_8xb8-300e_coco.py")
-    parser.add_argument("--dwpose_config", type=str, default=f"{this_dir}/pose/config/dwpose-l_384x288.py")
-    parser.add_argument("--yolox_ckpt",  type=str, default=f"{this_dir}/pretrained_weights/dwpose/yolox_l_8x8_300e_coco.pth")
-    parser.add_argument("--dwpose_ckpt", type=str, default=f"{this_dir}/pretrained_weights/dwpose/dw-ll_ucoco_384.pth")
+    parser.add_argument("--yolox_config",  type=str, default=f"{os.path.dirname(__file__)}/pose/config/yolox_l_8xb8-300e_coco.py")
+    parser.add_argument("--dwpose_config", type=str, default=f"{os.path.dirname(__file__)}/pose/config/dwpose-l_384x288.py")
+    parser.add_argument("--yolox_ckpt",  type=str, default=f"{os.path.dirname(__file__)}/pretrained_weights/dwpose/yolox_l_8x8_300e_coco.pth")
+    parser.add_argument("--dwpose_ckpt", type=str, default=f"{os.path.dirname(__file__)}/pretrained_weights/dwpose/dw-ll_ucoco_384.pth")
 
 
     parser.add_argument('--align_frame', type=int, default=0, help='the frame index of the video to align')

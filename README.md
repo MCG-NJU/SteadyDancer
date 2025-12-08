@@ -116,6 +116,7 @@ pip install "xfuser[diffusers,flash-attn]"
 pip install -r requirements.txt
 
 # Install pose extraction dependencies
+pip install --no-cache-dir -U pip setuptools wheel
 pip install moviepy decord              # moviepy-2.2.1, decord-0.6.0
 pip install --no-cache-dir -U openmim   # openmim-0.3.9
 mim install mmengine                    # mmengine-0.10.7
@@ -124,50 +125,26 @@ mim install "mmdet>=3.1.0"              # mmdet-3.3.0
 pip install mmpose                      # mmpose-1.3.2
 ```
 
-- Errors consistently occur during the installation of the mmcv and mmpose packages, so please verify that both packages were installed successfully:
-```
-python -c "import mmcv"
-python -c "import mmpose"
-python -c "from mmpose.apis import inference_topdown"
-python -c "from mmpose.apis import init_model as init_pose_estimator"
-python -c "from mmpose.evaluation.functional import nms"
-python -c "from mmpose.utils import adapt_mmdet_pipeline"
-python -c "from mmpose.structures import merge_data_samples"
-```
-
 - If you encounter "*ModuleNotFoundError: No module named 'mmcv._ext'*" issue during installation, please re-install mmcv manually (We haven't found a more convenient and stable method. If you have a better method, please submit a pull request to help us. We would greatly appreciate it 😊.):
 ```
-mim uninstall mmcv -y
-git clone https://github.com/open-mmlab/mmcv.git
-cd mmcv && git checkout v2.1.0
-pip install -r requirements/optional.txt
-gcc --version                               # Check the gcc version (requires 5.4+)
-python setup.py build_ext                   # Build the C++ and CUDA extensions, may take a while
-python setup.py develop
-pip install -e . -v                         # Install mmcv in editable mode
-python .dev_scripts/check_installation.py   # just verify the installation was successful by running this script, ignore the last verify script
-cd ../
-```
-- **Torch 2.5.x + CUDA 12.1 users:** there is no prebuilt mmcv wheel for this combo. Build mmcv from source inside your `steadydancer` conda env so `mmcv._ext` is available:
-```
-conda activate steadydancer
-
 # Clean and prep
 pip uninstall -y mmcv mmcv-full mmcv-lite mmpose mmdet mmengine || true
-pip install --no-cache-dir -U pip setuptools wheel openmim
-mim install mmengine==0.10.7
+mim install mmengine                    # mmengine-0.10.7
 
 # Build mmcv with CUDA ops
 git clone https://github.com/open-mmlab/mmcv.git
 cd mmcv && git checkout v2.1.0
 pip install -r requirements/optional.txt
-MMCV_WITH_OPS=1 MAX_JOBS=$(nproc) python setup.py build_ext      # compile C++/CUDA ops
-MMCV_WITH_OPS=1 MAX_JOBS=$(nproc) python setup.py develop        # install in-place
+gcc --version                                                   # Check the gcc version (requires 5.4+)
+MMCV_WITH_OPS=1 MAX_JOBS=$(nproc) python setup.py build_ext     # Build the C++ and CUDA extensions, may take a while
+MMCV_WITH_OPS=1 MAX_JOBS=$(nproc) python setup.py develop       # Install mmcv with the C++ and CUDA extensions, in-place
+# pip install -e . -v                                           # Install mmcv in editable mode
+python .dev_scripts/check_installation.py                       # Verify the mmcv installation
+cd ../
 
 # Reinstall deps that rely on mmcv
-cd ..
-mim install "mmdet>=3.1.0"
-pip install mmpose==1.3.2
+mim install "mmdet>=3.1.0"              # mmdet-3.3.0
+pip install mmpose                      # mmpose-1.3.2
 
 # Quick smoke test
 python - <<'PY'
