@@ -28,6 +28,7 @@
         <a href="https://arxiv.org/abs/2511.19320"><img src='https://img.shields.io/badge/arXiv-2511.19320-red' alt='Paper PDF'></a>
         <a href='https://mcg-nju.github.io/steadydancer-web'><img src='https://img.shields.io/badge/Project-Page-blue' alt='Project Page'></a>
         <a href='https://huggingface.co/MCG-NJU/SteadyDancer-14B'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-Model-yellow'></a>
+        <a href='https://modelscope.cn/models/MCG-NJU/SteadyDancer-14B'><img src='https://img.shields.io/badge/🤖%20ModelScope-Model-purple'></a>
         <a href='https://huggingface.co/datasets/MCG-NJU/X-Dance'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20HuggingFace-X--Dance-green'></a>
     <br>
     <b></a>Multimedia Computing Group, Nanjing University &nbsp; | &nbsp; </a>Platform and Content Group (PCG), Tencent  </b>
@@ -166,6 +167,8 @@ wget https://download.openmmlab.com/mmdetection/v2.0/yolox/yolox_l_8x8_300e_coco
 
 # Download SteadyDancer-14B model weights
 huggingface-cli download MCG-NJU/SteadyDancer-14B --local-dir ./SteadyDancer-14B
+## or download from modelscope
+## modelscope download --model MCG-NJU/SteadyDancer-14B ./SteadyDancer-14B
 ```
 
 ## 🚀 Inference
