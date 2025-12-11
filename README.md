@@ -42,6 +42,8 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 
 ## 📣 Updates
 
+- **2026-12-11**: 🔥 Provide a new [workflow](workflows/wanvideo_SteadyDancer_example_03.json) for [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper), which inserted an alignment-enabled pose detector from [ComfyUI-WanAnimatePreprocess](https://github.com/kijai/ComfyUI-WanAnimatePreprocess), without the installation of open mmpose.
+- **2025-12-08**: 🔥 Released our weight in [ModelScope](https://modelscope.cn/models/MCG-NJU/SteadyDancer-14B) for easier use in China.
 - **2025-12-04**: 🔥 Released our weight in [GGUF format](https://huggingface.co/MCG-NJU/SteadyDancer-GGUF), which coverted from [Kijai weight](https://huggingface.co/Kijai/WanVideo_comfy/tree/main/SteadyDancer) by [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF/tree/main/tools). It offers lower cost in [Kijai ComfyUI](https://github.com/kijai/ComfyUI-WanVideoWrapper).
 - **2025-11-27**: 🔥 Supported Multi-GPU inference with FSDP + xDiT USP in the inference code.
 - **2025-11-24**: 🔥 Released the X-Dance Benchmark on [huggingface](https://huggingface.co/datasets/MCG-NJU/X-Dance).
@@ -53,7 +55,7 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 We warmly welcome community contributions to SteadyDancer! If your work has any relation or help to SteadyDancer and you would like more people to see it, please inform us.
 
 - **2025-12-03**: 🔥 SteadyDancer is now supported in [WanGP](https://github.com/deepbeepmeep/Wan2GP). [deepbeepmeep](https://github.com/deepbeepmeep) said WanGP supports full preprocessing pipeline with augmented poses, or use Loras accelerators for a quick generation. Thanks for their contributions!
-- **2025-11-30**: 🔥 SteadyDancer now supports ComfyUI in [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper). **Thanks to [kijai](https://github.com/kijai) for the tremendous contribution 🙏🙏 !!** Please note that our pose detector, alignment, and augmentor are still missing in the current version, which will impact performance, but you can already enjoy it with vitpose/dwpose and lightx2v. **Stay tuned for the full version later!!**
+- **2025-11-30**: 🔥 SteadyDancer now supports ComfyUI in [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper). **Thanks to [kijai](https://github.com/kijai) for the tremendous contribution 🙏🙏 !!** Please note that our pose ~~detector, alignment, and~~ augmentor are still missing in the current version, which will impact performance, but you can already enjoy it with vitpose/dwpose and lightx2v. **Stay tuned for the full version later!!**
 
 ## 🎯 Motivation
 
