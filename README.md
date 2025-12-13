@@ -42,7 +42,8 @@ This repository is the official implementation of paper "SteadyDancer: Harmonize
 
 ## 📣 Updates
 
-- **2026-12-11**: 🔥 Provide a new [workflow](workflows/wanvideo_SteadyDancer_example_03.json) for [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper), which inserted an alignment-enabled pose detector from [ComfyUI-WanAnimatePreprocess](https://github.com/kijai/ComfyUI-WanAnimatePreprocess), without the installation of open mmpose.
+- **2026-12-12**: 🔥 Added example workflow `wanvideo_SteadyDancer_example_04.json` for multi-person video generation in ComfyUI using SteadyDancer with a multi-person pose detector from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux) to support multi-person video generation.
+- **2026-12-11**: 🔥 Provide a new [workflow](workflows/wanvideo_SteadyDancer_example_03.json) for [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper), which inserted an **alignment-enabled** pose detector from [ComfyUI-WanAnimatePreprocess](https://github.com/kijai/ComfyUI-WanAnimatePreprocess), **without the installation of open mmpose** in ComfyUI.
 - **2025-12-08**: 🔥 Released our weight in [ModelScope](https://modelscope.cn/models/MCG-NJU/SteadyDancer-14B) for easier use in China.
 - **2025-12-04**: 🔥 Released our weight in [GGUF format](https://huggingface.co/MCG-NJU/SteadyDancer-GGUF), which coverted from [Kijai weight](https://huggingface.co/Kijai/WanVideo_comfy/tree/main/SteadyDancer) by [ComfyUI-GGUF](https://github.com/city96/ComfyUI-GGUF/tree/main/tools). It offers lower cost in [Kijai ComfyUI](https://github.com/kijai/ComfyUI-WanVideoWrapper).
 - **2025-11-27**: 🔥 Supported Multi-GPU inference with FSDP + xDiT USP in the inference code.
