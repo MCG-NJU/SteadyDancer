@@ -2,8 +2,8 @@ This directory contains example workflows for using SteadyDancer in ComfyUI.
 
 - wanvideo_SteadyDancer_example_03.json: replace the pose detector in [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper/blob/main/example_workflows/wanvideo_SteadyDancer_example_01.json) with an **alignment-enabled** one from [ComfyUI-WanAnimatePreprocess](https://github.com/kijai/ComfyUI-WanAnimatePreprocess).
 - wanvideo_SteadyDancer_example_04.json: replace the pose detector in [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper/blob/main/example_workflows/wanvideo_SteadyDancer_example_01.json) with an **multi-person** one from [comfyui_controlnet_aux](https://github.com/Fannovel16/comfyui_controlnet_aux) to support multi-person video generation.
-    - Without training in a multi-person scenario, SteadyDancer can directly perform inference in a multi-person scenario using the multi-person pose detector, although the results may not be optimal.
-    - We also experimented with using a single-person detector to provide pose conditions in multi-person scenes, and the results were unexpected. Although only one person was detected per frame, by constantly changing the detector, everyone was able to move as closely as possible according to the conditions.
+    - **Without training in a multi-person scenario**, SteadyDancer can directly perform inference in a multi-person scenario using the multi-person pose detector, although the results may not be optimal.
+    - We also experimented with using a single-person detector to provide pose conditions in multi-person scenes, and the results were unexpected. Although **only one person was detected per frame**, by constantly changing the detected person, everyone was able to move as closely as possible according to the conditions.
     - The following results are from using `fp8` at a small resolution.
 
 <table class="center">
